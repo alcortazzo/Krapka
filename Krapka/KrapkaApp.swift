@@ -1,3 +1,4 @@
+import AppKit
 import Combine
 import SwiftUI
 
@@ -20,7 +21,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_: Notification) {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
-            button.image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Connection Status")
+            let image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Connection Status")
+            let greenImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemGreen]))
+
+            button.image = greenImage
             button.action = #selector(togglePopover)
         }
 
@@ -29,6 +33,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         popover.behavior = .transient
 
         pingManager.startPinging()
+
+        // Observe changes to pingManager.color
+        pingManager.$color.sink { [weak self] color in
+            self?.updateButtonAppearance(color: color)
+        }.store(in: &cancellables)
     }
 
     @objc func togglePopover() {
@@ -37,6 +46,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 popover.performClose(nil)
             } else {
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
+            }
+        }
+    }
+
+    private var cancellables = Set<AnyCancellable>()
+
+    private func updateButtonAppearance(color: Color) {
+        let image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Connection Status")
+
+        if let button = statusItem.button {
+            switch color {
+            case .green:
+                print("green")
+                let greenImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemGreen]))
+                button.image = greenImage
+            case .yellow:
+                print("yellow")
+                let yellowImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemYellow]))
+                button.image = yellowImage
+            case .red:
+                print("red")
+                let redImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemRed]))
+                button.image = redImage
+            default:
+                print("default")
+                button.image = image
             }
         }
     }

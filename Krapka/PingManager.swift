@@ -1,10 +1,10 @@
 import Foundation
 import Network
+import SwiftUI
 
 class PingManager: ObservableObject {
-    @Published var latencies: [LatencyData] = [
-        // LatencyData(rawValue: "0.0"),
-    ]
+    @Published var latencies: [LatencyData] = []
+    @Published var color: Color = .green
 
     private let command = """
         output=$(ping -c 2 -i 0.2 1.1.1.1 2>/dev/null)
@@ -31,15 +31,24 @@ class PingManager: ObservableObject {
     }
 
     private func ping() {
+        print("Pinging...")
         var result: String = shell(command)
         result = result.trimmingCharacters(in: .newlines)
 
         if result.isEmpty {
+            addLatency(LatencyData(rawValue: "0.0"))
+            color = .red
         } else {
             let latency = LatencyData(rawValue: result)
-
             addLatency(latency)
+
+            if latency.latency <= 50 {
+                color = .green
+            } else {
+                color = .yellow
+            }
         }
+        print("Latency: \(result)")
     }
 
     private func addLatency(_ latency: LatencyData) {
