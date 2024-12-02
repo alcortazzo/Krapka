@@ -58,19 +58,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if let button = statusItem.button {
             switch color {
             case .green:
-                print("green")
                 let greenImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemGreen]))
                 button.image = greenImage
             case .yellow:
-                print("yellow")
                 let yellowImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemYellow]))
                 button.image = yellowImage
             case .red:
-                print("red")
                 let redImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemRed]))
                 button.image = redImage
             default:
-                print("default")
                 button.image = image
             }
         }

@@ -17,11 +17,13 @@ class PingManager: ObservableObject {
     private let maxResults = 60
     private var timer: Timer?
     private let session: URLSession = .init(configuration: .default)
-    private let interval: TimeInterval = 1.0
+    private let interval: TimeInterval = 2.0
 
     func startPinging() {
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            self?.ping()
+            DispatchQueue.global(qos: .background).async {
+                self?.ping()
+            }
         }
     }
 
@@ -31,24 +33,24 @@ class PingManager: ObservableObject {
     }
 
     private func ping() {
-        print("Pinging...")
         var result: String = shell(command)
         result = result.trimmingCharacters(in: .newlines)
 
-        if result.isEmpty {
-            addLatency(LatencyData(rawValue: "0.0"))
-            color = .red
-        } else {
-            let latency = LatencyData(rawValue: result)
-            addLatency(latency)
-
-            if latency.latency <= 50 {
-                color = .green
+        DispatchQueue.main.async {
+            if result.isEmpty {
+                self.addLatency(LatencyData(rawValue: "0.0"))
+                self.color = .red
             } else {
-                color = .yellow
+                let latency = LatencyData(rawValue: result)
+                self.addLatency(latency)
+
+                if latency.latency <= 50 {
+                    self.color = .green
+                } else {
+                    self.color = .yellow
+                }
             }
         }
-        print("Latency: \(result)")
     }
 
     private func addLatency(_ latency: LatencyData) {
