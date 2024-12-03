@@ -34,7 +34,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
         pingManager.startPinging()
 
-        // Observe changes to pingManager.color
         pingManager.$color.sink { [weak self] color in
             self?.updateButtonAppearance(color: color)
         }.store(in: &cancellables)

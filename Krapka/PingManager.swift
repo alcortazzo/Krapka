@@ -5,6 +5,7 @@ import SwiftUI
 class PingManager: ObservableObject {
     @Published var latencies: [LatencyData] = []
     @Published var color: Color = .green
+    @Published var isPinging: Bool = false
 
     private let command = """
         output=$(ping -c 2 -i 0.2 1.1.1.1 2>/dev/null)
@@ -20,6 +21,7 @@ class PingManager: ObservableObject {
     private let interval: TimeInterval = 2.0
 
     func startPinging() {
+        isPinging = true
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             DispatchQueue.global(qos: .background).async {
                 self?.ping()
@@ -30,6 +32,7 @@ class PingManager: ObservableObject {
     func stopPinging() {
         timer?.invalidate()
         timer = nil
+        isPinging = false
     }
 
     private func ping() {
