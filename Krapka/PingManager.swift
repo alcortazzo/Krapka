@@ -22,6 +22,9 @@ class PingManager: ObservableObject {
 
     func startPinging() {
         isPinging = true
+
+        color = .red
+
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             DispatchQueue.global(qos: .background).async {
                 self?.ping()
@@ -32,6 +35,9 @@ class PingManager: ObservableObject {
     func stopPinging() {
         timer?.invalidate()
         timer = nil
+
+        color = .gray
+
         isPinging = false
     }
 
@@ -40,7 +46,9 @@ class PingManager: ObservableObject {
         result = result.trimmingCharacters(in: .newlines)
 
         DispatchQueue.main.async {
-            if result.isEmpty {
+            if self.isPinging == false {
+                self.color = .gray
+            } else if result.isEmpty {
                 self.addLatency(LatencyData(rawValue: "0.0"))
                 self.color = .red
             } else {
