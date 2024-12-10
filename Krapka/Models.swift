@@ -3,13 +3,14 @@ import SwiftUI
 
 struct LatencyData: Identifiable {
     let id = UUID()
-    let timestamp: Date = .init()
 
+    let timestamp: Date
     let rawValue: String
     let latency: Double
     let formattedValue: String
 
-    init(rawValue: String) {
+    init(timestamp: Date, rawValue: String) {
+        self.timestamp = timestamp
         self.rawValue = rawValue
         latency = Double(rawValue.replacingOccurrences(of: ",", with: ".")) ?? 0.0
 

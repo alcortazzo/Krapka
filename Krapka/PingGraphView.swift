@@ -12,7 +12,7 @@ struct PingGraphView: View {
 
         VStack(alignment: .leading) {
             Chart {
-                ForEach(Array(pingManager.latencies.enumerated()), id: \.offset) { _, entry in
+                ForEach(Array(pingManager.latencies.sorted(by: { $0.timestamp < $1.timestamp }).enumerated()), id: \.offset) { _, entry in
                     LineMark(
                         x: .value("Time", entry.timestamp),
                         y: .value("Latency", entry.latency)

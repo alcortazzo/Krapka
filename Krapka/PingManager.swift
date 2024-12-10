@@ -42,6 +42,7 @@ class PingManager: ObservableObject {
     }
 
     private func ping() {
+        let timestamp: Date = .init()
         var result: String = shell(command)
         result = result.trimmingCharacters(in: .newlines)
 
@@ -49,10 +50,10 @@ class PingManager: ObservableObject {
             if self.isPinging == false {
                 self.color = .gray
             } else if result.isEmpty {
-                self.addLatency(LatencyData(rawValue: "0.0"))
+                self.addLatency(LatencyData(timestamp: timestamp, rawValue: "0.0"))
                 self.color = .red
             } else {
-                let latency = LatencyData(rawValue: result)
+                let latency = LatencyData(timestamp: timestamp, rawValue: result)
                 self.addLatency(latency)
 
                 if latency.latency <= 50 {
