@@ -19,6 +19,7 @@ class PingManager: ObservableObject {
     private var timer: Timer?
     private let session: URLSession = .init(configuration: .default)
     private let interval: TimeInterval = 2.0
+    private var isPingingInProgress: Bool = false
 
     func startPinging() {
         isPinging = true
@@ -42,6 +43,9 @@ class PingManager: ObservableObject {
     }
 
     private func ping() {
+        guard !isPingingInProgress else { return }
+        isPingingInProgress = true
+
         let timestamp: Date = .init()
         var result: String = shell(command)
         result = result.trimmingCharacters(in: .newlines)
@@ -62,6 +66,7 @@ class PingManager: ObservableObject {
                     self.color = .yellow
                 }
             }
+            self.isPingingInProgress = false
         }
     }
 
