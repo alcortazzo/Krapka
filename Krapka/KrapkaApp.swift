@@ -29,8 +29,8 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
 
         popover = NSPopover()
-        popover.contentViewController = NSHostingController(rootView: PingGraphView(pingManager: pingManager))
         popover.behavior = .transient
+        popover.delegate = self
 
         pingManager.startPinging()
 
@@ -44,6 +44,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if popover.isShown {
                 popover.performClose(nil)
             } else {
+                popover.contentViewController = NSHostingController(rootView: PingGraphView(pingManager: pingManager))
                 popover.show(relativeTo: button.bounds, of: button, preferredEdge: .minY)
             }
         }
@@ -69,5 +70,11 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 button.image = image
             }
         }
+    }
+}
+
+extension AppDelegate: NSPopoverDelegate {
+    func popoverDidClose(_ notification: Notification) {
+        popover.contentViewController = nil
     }
 }
