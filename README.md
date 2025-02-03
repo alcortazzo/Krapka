@@ -28,4 +28,10 @@
 
 ### Download
 
-You can download the latest version from the [releases page](https://github.com/alcortazzo/Krapka/releases/latest).
+You can install it using Homebrew (_the command below taps the [alcortazzo/krapka](https://github.com/alcortazzo/homebrew-krapka/blob/main/Casks/krapka.rb) repository and installs the latest version_):
+
+```bash
+brew install alcortazzo/krapka/krapka
+```
+
+Or manually download the latest version from the [releases page](https://github.com/alcortazzo/Krapka/releases/latest).
