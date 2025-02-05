@@ -8,7 +8,7 @@ class PingManager: ObservableObject {
     @Published var isPinging: Bool = false
 
     private let command = """
-        output=$(ping -c 2 -i 0.2 1.1.1.1 2>/dev/null)
+        output=$(ping -c 2 -i 0.2 -t 5 1.1.1.1 2>/dev/null)
         if echo "$output" | grep -q "100.0% packet loss"; then
             echo ""
         else
