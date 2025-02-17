@@ -25,7 +25,7 @@ class PingManager: ObservableObject {
         stopPinging()
 
         isPinging = true
-        color = .red
+        color = .gray
 
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
             self?.ping()
