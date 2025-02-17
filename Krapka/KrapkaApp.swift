@@ -74,7 +74,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 extension AppDelegate: NSPopoverDelegate {
-    func popoverDidClose(_ notification: Notification) {
+    func popoverDidClose(_: Notification) {
         popover.contentViewController = nil
     }
 }

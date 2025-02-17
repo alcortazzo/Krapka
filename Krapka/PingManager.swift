@@ -22,15 +22,15 @@ class PingManager: ObservableObject {
     private var isPingingInProgress: Bool = false
 
     func startPinging() {
-        isPinging = true
+        stopPinging()
 
+        isPinging = true
         color = .red
 
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { [weak self] _ in
-            DispatchQueue.global(qos: .background).async {
-                self?.ping()
-            }
+            self?.ping()
         }
+        timer?.tolerance = 0.3
     }
 
     func stopPinging() {
@@ -43,30 +43,31 @@ class PingManager: ObservableObject {
     }
 
     private func ping() {
-        guard !isPingingInProgress else { return }
-        isPingingInProgress = true
+        DispatchQueue.global(qos: .background).async {
+            guard !self.isPingingInProgress else { return }
+            self.isPingingInProgress = true
 
-        let timestamp: Date = .init()
-        var result: String = shell(command)
-        result = result.trimmingCharacters(in: .newlines)
+            let timestamp: Date = .init()
+            let result: String = shell(self.command).trimmingCharacters(in: .newlines)
 
-        DispatchQueue.main.async {
-            if self.isPinging == false {
-                self.color = .gray
-            } else if result.isEmpty {
-                self.addLatency(LatencyData(timestamp: timestamp, rawValue: "0.0"))
-                self.color = .red
-            } else {
-                let latency = LatencyData(timestamp: timestamp, rawValue: result)
-                self.addLatency(latency)
-
-                if latency.latency <= 50 {
-                    self.color = .green
+            DispatchQueue.main.async {
+                if self.isPinging == false {
+                    self.color = .gray
+                } else if result.isEmpty {
+                    self.addLatency(LatencyData(timestamp: timestamp, rawValue: "0.0"))
+                    self.color = .red
                 } else {
-                    self.color = .yellow
+                    let latency = LatencyData(timestamp: timestamp, rawValue: result)
+                    self.addLatency(latency)
+
+                    if latency.latency <= 50 {
+                        self.color = .green
+                    } else {
+                        self.color = .yellow
+                    }
                 }
+                self.isPingingInProgress = false
             }
-            self.isPingingInProgress = false
         }
     }
 
