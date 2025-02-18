@@ -17,23 +17,32 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
     var popover: NSPopover!
     @ObservedObject private var pingManager = PingManager()
+    private var cancellables = Set<AnyCancellable>()
 
     func applicationDidFinishLaunching(_: Notification) {
+        setupStatusItem()
+        setupPopover()
+        setupPingManager()
+    }
+
+    private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem.button {
             let image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Connection Status")
             let greenImage = image?.withSymbolConfiguration(.init(paletteColors: [.systemGreen]))
-
             button.image = greenImage
             button.action = #selector(togglePopover)
         }
+    }
 
+    private func setupPopover() {
         popover = NSPopover()
         popover.behavior = .transient
         popover.delegate = self
+    }
 
+    private func setupPingManager() {
         pingManager.startPinging()
-
         pingManager.$color.sink { [weak self] color in
             self?.updateButtonAppearance(color: color)
         }.store(in: &cancellables)
@@ -49,8 +58,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
-
-    private var cancellables = Set<AnyCancellable>()
 
     private func updateButtonAppearance(color: Color) {
         let image = NSImage(systemSymbolName: "circle.fill", accessibilityDescription: "Connection Status")

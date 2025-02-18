@@ -17,7 +17,6 @@ class PingManager: ObservableObject {
     """
     private let maxResults = 60
     private var timer: Timer?
-    private let session: URLSession = .init(configuration: .default)
     private let interval: TimeInterval = 2.0
     private var isPingingInProgress: Bool = false
 
@@ -51,22 +50,26 @@ class PingManager: ObservableObject {
             let result: String = shell(self.command).trimmingCharacters(in: .newlines)
 
             DispatchQueue.main.async {
-                if self.isPinging == false {
-                    self.color = .gray
-                } else if result.isEmpty {
-                    self.addLatency(LatencyData(timestamp: timestamp, rawValue: "0.0"))
-                    self.color = .red
-                } else {
-                    let latency = LatencyData(timestamp: timestamp, rawValue: result)
-                    self.addLatency(latency)
-
-                    if latency.latency <= 50 {
-                        self.color = .green
-                    } else {
-                        self.color = .yellow
-                    }
-                }
+                self.handlePingResult(result, timestamp)
                 self.isPingingInProgress = false
+            }
+        }
+    }
+
+    private func handlePingResult(_ result: String, _ timestamp: Date) {
+        if isPinging == false {
+            color = .gray
+        } else if result.isEmpty {
+            addLatency(LatencyData(timestamp: timestamp, rawValue: "0.0"))
+            color = .red
+        } else {
+            let latency = LatencyData(timestamp: timestamp, rawValue: result)
+            addLatency(latency)
+
+            if latency.latency <= 50 {
+                color = .green
+            } else {
+                color = .yellow
             }
         }
     }
