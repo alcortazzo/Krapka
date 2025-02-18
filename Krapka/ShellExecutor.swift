@@ -1,6 +1,5 @@
 import Foundation
 
-@discardableResult
 func shell(_ command: String) -> String {
     let task = Process()
     let pipe = Pipe()
@@ -17,8 +16,10 @@ func shell(_ command: String) -> String {
         return ""
     }
 
+    task.waitUntilExit()
+
     let data = pipe.fileHandleForReading.readDataToEndOfFile()
-    let output = String(data: data, encoding: .utf8)!
+    let output = String(data: data, encoding: .utf8) ?? ""
 
     return output
 }
